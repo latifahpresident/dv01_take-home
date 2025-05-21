@@ -15,7 +15,15 @@ interface DropdownOption {
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [columns, setColumns] = useState<string[]>([]);
-  const [data, setData] = useState<any[]>([]);
+  const [originalData, setOriginalData] = useState<any[]>([]);
+  const [groupedData, setGroupedData] = useState<Map<string, any>>(new Map());
+  const [filterOptions, setFilterOptions] = useState<DropdownOption>({
+    homeOwnership: [],
+    quarter: [],
+    term: [],
+    year: [],
+  });
+
   const [dropdownOptions, setDropdownOptions] = useState<DropdownOption>({
     homeOwnership: [],
     quarter: [],
@@ -33,30 +41,45 @@ const App = () => {
         quarter: new Set<string>(),
         term: new Set<string>(),
         year: new Set<string>(),
+        groupedData: new Map<string, any>(),
       };
 
       data.forEach((item) => {
+        if (!item.grade) return;
+
         dataFields.grade.add(item.grade);
         dataFields.homeOwnership.add(item.homeOwnership);
         dataFields.quarter.add(item.quarter);
         dataFields.term.add(item.term);
         dataFields.year.add(item.year);
+
+        if (dataFields.groupedData.has(item.grade)) {
+          dataFields.groupedData.get(item.grade).push(item);
+        } else {
+          dataFields.groupedData.set(item.grade, [item]);
+        }
       });
 
       // remove empty strings & sort
-      setColumns([...dataFields.grade].filter((item) => item).sort());
+      setColumns([...dataFields.grade].sort());
       setDropdownOptions({
-        homeOwnership: [...dataFields.homeOwnership].filter((item) => item).sort(),
-        quarter: [...dataFields.quarter].filter((item) => item).sort(),
-        term: [...dataFields.term].filter((item) => item).sort(),
-        year: [...dataFields.year].filter((item) => item).sort(),
+        homeOwnership: [...dataFields.homeOwnership].sort(),
+        quarter: [...dataFields.quarter].sort(),
+        term: [...dataFields.term].sort(),
+        year: [...dataFields.year].sort(),
       });
-      setData(data);
+
+      setGroupedData(dataFields.groupedData);
+      setOriginalData(data);
       setInitializing(false);
     };
 
     initialize();
   }, []);
+
+  const handleFilterChange = (data: string[], dropdown: string) => {
+    setFilterOptions(data);
+  };
 
   if (initializing) {
     return (
@@ -91,6 +114,7 @@ const App = () => {
               label: item,
               value: item,
             }))}
+            onSelectChange={(selected) => handleFilterChange(selected, 'homeOwnership')}
           />
           <Multiselect
             placeholder="Quarter"
@@ -98,6 +122,7 @@ const App = () => {
               label: item,
               value: item,
             }))}
+            onSelectChange={(selected) => handleFilterChange(selected, 'quarter')}
           />
           <Multiselect
             placeholder="Term"
@@ -105,6 +130,7 @@ const App = () => {
               label: item,
               value: item,
             }))}
+            onSelectChange={(selected) => handleFilterChange(selected, 'term')}
           />
           <Multiselect
             placeholder="Year"
@@ -112,6 +138,7 @@ const App = () => {
               label: item,
               value: item,
             }))}
+            onSelectChange={(selected) => handleFilterChange(selected, 'year')}
           />
         </div>
       </div>
