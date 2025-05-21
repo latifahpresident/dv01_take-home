@@ -8,10 +8,14 @@ interface ButtonProps {
 
 export const Button = ({ label, onClick, className }: ButtonProps) => {
   return (
-    <button className={cn('bg-blue-500 text-white p-2 rounded-md', className)} onClick={onClick}>
+    <button
+      className={cn(
+        'bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded',
+        className
+      )}
+      onClick={onClick}
+    >
       {label}
     </button>
   );
 };
-
-export default Button;
