@@ -32,8 +32,6 @@ describe('Multiselect Component', () => {
   test('selects and deselects options and displays count', async () => {
     const textbox = screen.getByText('dropdown textbox');
     await userEvent.click(textbox);
-    screen.debug();
-
     // Select Option 1
     const opt1Checkbox = screen.getByText('option 1');
     fireEvent.click(opt1Checkbox);
