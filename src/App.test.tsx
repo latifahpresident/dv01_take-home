@@ -47,6 +47,7 @@ describe('<App />', () => {
   });
 
   it('shows the correct balances for each grade', async () => {
+    // had to wrap in act to prevent async issues
     await act(async () => {
       render(<App />);
     });
@@ -62,7 +63,6 @@ describe('<App />', () => {
       render(<App />);
     });
 
-    // now perform the filter click inside act as well
     await act(async () => {
       await waitFor(() => expect(screen.queryByText(/loading\.\.\./i)).not.toBeInTheDocument());
 
