@@ -1,4 +1,5 @@
 import Papa from 'papaparse';
+// had to append ?url to the end of the file path to get it to work with vite
 import rawData from './loansize.csv?url';
 
 const parseData = (result, rawData) => {

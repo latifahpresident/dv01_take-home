@@ -66,13 +66,16 @@ const App = () => {
   useEffect(() => {
     const initialize = async () => {
       const data = await getData();
+
+      // minor refactor to make the code more readable
+      // this saves me from looping multiple times to get the unique values
       const dataFields = {
         grade: new Set<string>(),
         homeOwnership: new Set<string>(),
         quarter: new Set<string>(),
         term: new Set<string>(),
         year: new Set<string>(),
-        groupedData: new Map<string, any>(),
+        groupedData: new Map<string, any>(), //using a map makes it easier to group the data by grade
       };
 
       data.forEach((item) => {
@@ -114,9 +117,11 @@ const App = () => {
     initialize();
   }, []);
 
+  // this is a simple loader to display while the data is loading
+  // I would add a skeleton loader if the data was to take longer to load
   if (initializing) {
     return (
-      <div className="flex items-center justify-center h-screen">
+      <div className="flex items-center justify-center mb-40">
         <MiniLoader className="mr-2 h-5 w-5 text-xl animate-spin" text="Loading..." />
       </div>
     );
@@ -134,25 +139,28 @@ const App = () => {
               <BarChart data={chartData} title="Live Data Chart">
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
+                {/* I formatted the y axis like this because it was being cut off otherwise */}
+                <YAxis tickFormatter={(value) => `$${(value / 1000000).toFixed(1)}M`} width={80} />
+                <Tooltip
+                  formatter={(value: number) => [`$${value.toLocaleString('en-US')}`, 'Value']}
+                />
                 <Bar dataKey="value" fill="#8884d8" />
               </BarChart>
             </ResponsiveContainer>
           </div>
         )}
-        <div className="text-2xl font-semibold my-4">Live Data Table</div>
-        <div className="flex items-center justify-evenly gap-6 mt-10">
+        <div className="text-2xl font-semibold mt-4">Live Data Table</div>
+        <div className="flex items-center justify-evenly gap-6 mt-6">
           {columns.map((column) => (
-            <div key={column} className="flex flex-col items-center justify-center h-40 w-40">
+            <div key={column} className="flex flex-col items-center justify-center h-44 w-44">
               <div className="flex font-bold items-center w-full h-full justify-center border-2 border-b-0 border-gray-300 pb-2">
                 {`Grade ${column}`}
               </div>
               <div className="flex items-center w-full h-full justify-center border-2 border-gray-300">
-                {`${aggregatedData.get(column)?.toLocaleString('en-US', {
+                {Number(aggregatedData.get(column)).toLocaleString('en-US', {
                   style: 'currency',
                   currency: 'USD',
-                })}`}
+                })}
               </div>
             </div>
           ))}

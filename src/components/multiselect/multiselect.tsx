@@ -41,10 +41,14 @@ export const Multiselect = ({
       : selected.filter((option) => option !== value);
 
     setSelected(newSelected);
+    // in the event onSelectChange is not provided, add coalescing to prevent errors
     onSelectChange?.(newSelected);
   };
 
   useEffect(() => {
+    // this is a bit of a hack to reset the selected values
+    // I don't like to use redux or global state for shared components
+    // as it's not scalable and just creates more complexity
     setSelected([]);
   }, [clearKey]);
 
@@ -71,7 +75,7 @@ export const Multiselect = ({
         <div
           ref={ref}
           className={cn(
-            'flex flex-col gap-2 mt-2 w-full border border-gray-300 rounded-md p-2 absolute top-10',
+            'flex flex-col gap-2 mt-2 w-full border bg-white z-10 border-gray-300 rounded-md p-2 absolute top-10',
             listClassName
           )}
         >

@@ -1,3 +1,4 @@
+// this code was shared so trying to keep it dry
 export const buildAggregatedData = (data: Map<string, any>) => {
   const aggregatedData = new Map<string, any>();
   const chartData: { name: string; value: number }[] = [];
