@@ -1,40 +1,59 @@
 import { useEffect, useState } from 'react';
 import './assets/stylesheets/app.css';
-import { Button, Multiselect } from './components';
+import { Button, Multiselect, Menu, MiniLoader } from './components';
 import { getData } from './services/request/api';
-import { Menu } from './domain/home/menu';
-import { MiniLoader } from './components/mini-loader/mini-loader';
+import { buildAggregatedData } from './utils/aggregator';
 
-interface DropdownOption {
+interface DropdownOptions {
   homeOwnership: string[];
   quarter: string[];
   term: string[];
   year: string[];
 }
 
+interface OriginalData {
+  grade: string;
+  homeOwnership: string;
+  quarter: string;
+  term: string;
+  year: string;
+  currentBalance: string;
+}
 const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [columns, setColumns] = useState<string[]>([]);
-  const [originalData, setOriginalData] = useState<any[]>([]);
-  const [groupedData, setGroupedData] = useState<Map<string, any>>(new Map());
-  const [filterOptions, setFilterOptions] = useState<DropdownOption>({
+  const [originalData, setOriginalData] = useState<OriginalData[]>([]);
+  const [aggregatedData, setAggregatedData] = useState<Map<string, any>>(new Map());
+  const [dropdownOptions, setDropdownOptions] = useState<DropdownOptions>({
     homeOwnership: [],
     quarter: [],
     term: [],
     year: [],
   });
 
-  const [dropdownOptions, setDropdownOptions] = useState<DropdownOption>({
-    homeOwnership: [],
-    quarter: [],
-    term: [],
-    year: [],
-  });
+  const handleFilterChange = (data: string[], dropdown: string) => {
+    let unfilteredData = [...originalData].filter((item: any) => {
+      if (data.length > 0) {
+        return data.includes(item[dropdown]);
+      }
+      return true;
+    });
+
+    const groupedData = new Map<string, any>();
+    unfilteredData.forEach((item) => {
+      if (groupedData.has(item.grade)) {
+        groupedData.get(item.grade).push(item);
+      } else {
+        groupedData.set(item.grade, [item]);
+      }
+    });
+
+    setAggregatedData(buildAggregatedData(groupedData));
+  };
 
   useEffect(() => {
     const initialize = async () => {
       const data = await getData();
-
       const dataFields = {
         grade: new Set<string>(),
         homeOwnership: new Set<string>(),
@@ -45,6 +64,7 @@ const App = () => {
       };
 
       data.forEach((item) => {
+        // last row is always empty in the csv file
         if (!item.grade) return;
 
         dataFields.grade.add(item.grade);
@@ -69,17 +89,15 @@ const App = () => {
         year: [...dataFields.year].sort(),
       });
 
-      setGroupedData(dataFields.groupedData);
       setOriginalData(data);
+
+      setAggregatedData(buildAggregatedData(dataFields.groupedData));
+
       setInitializing(false);
     };
 
     initialize();
   }, []);
-
-  const handleFilterChange = (data: string[], dropdown: string) => {
-    setFilterOptions(data);
-  };
 
   if (initializing) {
     return (
@@ -96,12 +114,15 @@ const App = () => {
       <div className="mx-auto mt-20">
         <div className="flex items-center justify-evenly gap-6 mb-10">
           {columns.map((column) => (
-            <div className="flex flex-col items-center justify-center h-40 w-40">
-              <div className="flex items-center w-full h-full justify-center border-2 border-b-0 border-gray-300 pb-2">
+            <div key={column} className="flex flex-col items-center justify-center h-40 w-40">
+              <div className="flex font-bold items-center w-full h-full justify-center border-2 border-b-0 border-gray-300 pb-2">
                 {`Grade ${column}`}
               </div>
               <div className="flex items-center w-full h-full justify-center border-2 border-gray-300">
-                {column}
+                {`${aggregatedData.get(column)?.toLocaleString('en-US', {
+                  style: 'currency',
+                  currency: 'USD',
+                })}`}
               </div>
             </div>
           ))}
