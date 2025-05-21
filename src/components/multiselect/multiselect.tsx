@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Checkbox } from '../checkbox/checkbox';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { cn } from '../../utils/classname';
@@ -14,6 +14,7 @@ interface MultiselectProps {
   rootClassName?: string;
   listClassName?: string;
   textboxClassName?: string;
+  clearKey?: number;
 }
 
 export const Multiselect = ({
@@ -23,6 +24,7 @@ export const Multiselect = ({
   listClassName,
   rootClassName,
   textboxClassName,
+  clearKey,
 }: MultiselectProps) => {
   const [selected, setSelected] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -41,6 +43,10 @@ export const Multiselect = ({
     setSelected(newSelected);
     onSelectChange?.(newSelected);
   };
+
+  useEffect(() => {
+    setSelected([]);
+  }, [clearKey]);
 
   return (
     <div

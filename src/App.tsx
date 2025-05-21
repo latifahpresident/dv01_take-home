@@ -3,6 +3,7 @@ import './assets/stylesheets/app.css';
 import { Button, Multiselect, Menu, MiniLoader } from './components';
 import { getData } from './services/request/api';
 import { buildAggregatedData } from './utils/aggregator';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface DropdownOptions {
   homeOwnership: string[];
@@ -24,6 +25,8 @@ const App = () => {
   const [columns, setColumns] = useState<string[]>([]);
   const [originalData, setOriginalData] = useState<OriginalData[]>([]);
   const [aggregatedData, setAggregatedData] = useState<Map<string, any>>(new Map());
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [clearKey, setClearKey] = useState<number>(0);
   const [dropdownOptions, setDropdownOptions] = useState<DropdownOptions>({
     homeOwnership: [],
     quarter: [],
@@ -41,6 +44,8 @@ const App = () => {
 
     const groupedData = new Map<string, any>();
     unfilteredData.forEach((item) => {
+      if (!item.grade) return;
+
       if (groupedData.has(item.grade)) {
         groupedData.get(item.grade).push(item);
       } else {
@@ -48,7 +53,14 @@ const App = () => {
       }
     });
 
-    setAggregatedData(buildAggregatedData(groupedData));
+    const { chartData, aggregatedData } = buildAggregatedData(groupedData);
+    setChartData(chartData);
+    setAggregatedData(aggregatedData);
+  };
+
+  const handleReset = () => {
+    handleFilterChange([], '');
+    setClearKey((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -91,7 +103,10 @@ const App = () => {
 
       setOriginalData(data);
 
-      setAggregatedData(buildAggregatedData(dataFields.groupedData));
+      const { chartData, aggregatedData } = buildAggregatedData(dataFields.groupedData);
+
+      setChartData(chartData);
+      setAggregatedData(aggregatedData);
 
       setInitializing(false);
     };
@@ -108,11 +123,26 @@ const App = () => {
   }
 
   return (
-    <div className="App flex flex-col items-center">
+    <div className="flex flex-col items-center">
       <Menu />
+      <div className="mx-auto">
+        <div className="text-2xl font-semibold my-4">Live Data Chart</div>
 
-      <div className="mx-auto mt-20">
-        <div className="flex items-center justify-evenly gap-6 mb-10">
+        {chartData.length > 0 && (
+          <div className="w-full h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} title="Live Data Chart">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Bar dataKey="value" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+        <div className="text-2xl font-semibold my-4">Live Data Table</div>
+        <div className="flex items-center justify-evenly gap-6 mt-10">
           {columns.map((column) => (
             <div key={column} className="flex flex-col items-center justify-center h-40 w-40">
               <div className="flex font-bold items-center w-full h-full justify-center border-2 border-b-0 border-gray-300 pb-2">
@@ -128,9 +158,10 @@ const App = () => {
           ))}
         </div>
 
-        <div className="flex items-center justify-evenly gap-4">
+        <div className="flex items-center justify-evenly gap-4 mt-10">
           <Multiselect
             placeholder="Home Ownership"
+            clearKey={clearKey}
             options={dropdownOptions.homeOwnership.map((item) => ({
               label: item,
               value: item,
@@ -139,6 +170,7 @@ const App = () => {
           />
           <Multiselect
             placeholder="Quarter"
+            clearKey={clearKey}
             options={dropdownOptions.quarter.map((item) => ({
               label: item,
               value: item,
@@ -147,6 +179,7 @@ const App = () => {
           />
           <Multiselect
             placeholder="Term"
+            clearKey={clearKey}
             options={dropdownOptions.term.map((item) => ({
               label: item,
               value: item,
@@ -155,12 +188,15 @@ const App = () => {
           />
           <Multiselect
             placeholder="Year"
+            clearKey={clearKey}
             options={dropdownOptions.year.map((item) => ({
               label: item,
               value: item,
             }))}
             onSelectChange={(selected) => handleFilterChange(selected, 'year')}
           />
+
+          <Button label="Reset" onClick={handleReset} />
         </div>
       </div>
     </div>

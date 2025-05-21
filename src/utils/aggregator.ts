@@ -1,12 +1,20 @@
 export const buildAggregatedData = (data: Map<string, any>) => {
   const aggregatedData = new Map<string, any>();
-
+  const chartData: { name: string; value: number }[] = [];
   data.forEach((value: any, key: string) => {
-    aggregatedData.set(
-      key,
-      value.reduce((acc: number, item: any) => acc + parseFloat(item.currentBalance), 0)
-    );
+    const total = value
+      .reduce((acc: number, item: any) => acc + parseFloat(item.currentBalance), 0)
+      .toFixed(2);
+
+    chartData.push({
+      name: key,
+      value: total,
+    });
+    aggregatedData.set(key, total);
   });
 
-  return aggregatedData;
+  return {
+    chartData: chartData.sort((a, b) => Number(a.name) - Number(b.name)),
+    aggregatedData,
+  };
 };
