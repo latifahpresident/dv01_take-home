@@ -22,7 +22,11 @@ export const Checkbox = ({ checked, onCheckedChange = () => {}, label }: Checkbo
       <div className="h-6 w-6 flex items-center justify-center border border-gray-300 rounded-md p-0.5">
         {isChecked && <CheckIcon />}
       </div>
-      {label && <span className="text-base text-gray-700 font-medium">{label}</span>}
+      {label && (
+        <span className="text-base capitalize text-gray-700 font-medium">
+          {label.toLowerCase()}
+        </span>
+      )}
     </div>
   );
 };

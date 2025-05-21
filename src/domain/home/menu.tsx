@@ -8,7 +8,7 @@ export function Menu() {
   }, [dark]);
 
   return (
-    <header className="bg-white dark:bg-gray-800 text-gray-800 w-full dark:text-gray-100 h-20 flex items-center">
+    <header className="bg-white dark:bg-gray-800 text-gray-800 w-full dark:text-gray-100 h-20 flex items-center px-10">
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-center gap-4 h-full">
           <img

@@ -26,19 +26,30 @@ const App = () => {
   useEffect(() => {
     const initialize = async () => {
       const data = await getData();
-      const grades = data.map((item) => item.grade).sort();
-      const homeOwnership = data.map((item) => item.homeOwnership).sort();
-      const quarter = data.map((item) => item.quarter).sort();
-      const term = data.map((item) => item.term).sort();
-      const year = data.map((item) => item.year).sort();
 
-      // remove duplicates
-      setColumns([...new Set(grades)]);
+      const dataFields = {
+        grade: new Set<string>(),
+        homeOwnership: new Set<string>(),
+        quarter: new Set<string>(),
+        term: new Set<string>(),
+        year: new Set<string>(),
+      };
+
+      data.forEach((item) => {
+        dataFields.grade.add(item.grade);
+        dataFields.homeOwnership.add(item.homeOwnership);
+        dataFields.quarter.add(item.quarter);
+        dataFields.term.add(item.term);
+        dataFields.year.add(item.year);
+      });
+
+      // remove empty strings & sort
+      setColumns([...dataFields.grade].filter((item) => item).sort());
       setDropdownOptions({
-        homeOwnership: [...new Set(homeOwnership)],
-        quarter: [...new Set(quarter)],
-        term: [...new Set(term)],
-        year: [...new Set(year)],
+        homeOwnership: [...dataFields.homeOwnership].filter((item) => item).sort(),
+        quarter: [...dataFields.quarter].filter((item) => item).sort(),
+        term: [...dataFields.term].filter((item) => item).sort(),
+        year: [...dataFields.year].filter((item) => item).sort(),
       });
       setData(data);
       setInitializing(false);
@@ -64,7 +75,7 @@ const App = () => {
           {columns.map((column) => (
             <div className="flex flex-col items-center justify-center h-40 w-40">
               <div className="flex items-center w-full h-full justify-center border-2 border-b-0 border-gray-300 pb-2">
-                {column}
+                {`Grade ${column}`}
               </div>
               <div className="flex items-center w-full h-full justify-center border-2 border-gray-300">
                 {column}
