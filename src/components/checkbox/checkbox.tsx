@@ -4,7 +4,7 @@ import { useState } from 'react';
 interface CheckboxProps {
   checked: boolean;
   label?: string;
-  onCheckedChange?: (checked: boolean) => void;
+  onCheckedChange?: (data: { checked: boolean; label: string }) => void;
 }
 
 export const Checkbox = ({ checked, onCheckedChange = () => {}, label }: CheckboxProps) => {
@@ -14,7 +14,7 @@ export const Checkbox = ({ checked, onCheckedChange = () => {}, label }: Checkbo
     const newChecked = !isChecked;
 
     setIsChecked(newChecked);
-    onCheckedChange(newChecked);
+    onCheckedChange({ checked: newChecked, label: label || '' });
   };
 
   return (

@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Checkbox } from '../checkbox/checkbox';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { cn } from '../../utils/classname';
+import useOnClickOutside from '../../hooks/use-outside-click';
 
 interface MultiselectProps {
   options: {
@@ -8,38 +10,69 @@ interface MultiselectProps {
     value: string;
   }[];
   placeholder?: string;
-  onSelect?: () => string[];
+  onSelectChange?: (selected: string[]) => void;
+  rootClassName?: string;
+  listClassName?: string;
+  textboxClassName?: string;
 }
 
-export const Multiselect = ({ options, onSelect, placeholder }: MultiselectProps) => {
+export const Multiselect = ({
+  options,
+  onSelectChange,
+  placeholder,
+  listClassName,
+  rootClassName,
+  textboxClassName,
+}: MultiselectProps) => {
   const [selected, setSelected] = useState<string[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const handleClickOutside = useCallback(() => {
+    setIsOpen(false);
+  }, []);
 
-  const handleSelect = (option: string) => {
-    setSelected([...selected, option]);
+  useOnClickOutside(ref, handleClickOutside);
+
+  const handleSelect = (data: { checked: boolean; label: string }, value: string) => {
+    const newSelected = data.checked
+      ? [...selected, value]
+      : selected.filter((option) => option !== value);
+
+    setSelected(newSelected);
+    onSelectChange?.(newSelected);
   };
 
   return (
-    <div className="flex flex-col justify-center items-center">
+    <div className={cn('flex flex-col justify-center items-center', rootClassName)}>
       <div
-        className="flex justify-between text-gray-700 items-center border border-gray-300 rounded-md p-2 w-[300px] cursor-pointer"
+        className={cn(
+          'flex justify-between text-gray-500 items-center border border-gray-300 w-full rounded-md p-2 cursor-pointer',
+          textboxClassName
+        )}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected.length > 0 ? (
           <div>{`${selected.length} Applied `}</div>
         ) : (
-          <div>{placeholder || 'All'}</div>
+          <div>{placeholder || 'Filter by option(s)'}</div>
         )}
         <ChevronDownIcon />
       </div>
 
       {isOpen && (
-        <div className="flex flex-col gap-2 mt-2 w-[300px] border border-gray-300 rounded-md p-2">
+        <div
+          ref={ref}
+          className={cn(
+            'flex flex-col gap-2 mt-2 w-full border border-gray-300 rounded-md p-2',
+            listClassName
+          )}
+        >
           {options.map((option) => (
             <Checkbox
               key={option.value}
               checked={selected.includes(option.value)}
               label={option.label}
+              onCheckedChange={(data) => handleSelect(data, option.value)}
             />
           ))}
         </div>
