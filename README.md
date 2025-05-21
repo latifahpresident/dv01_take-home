@@ -6,6 +6,7 @@
 - I implemented the chart, and the filters and they work dynamically. I wanted to changed the layout but I tried to stick to the wireframe as close as i could. With more time, I’d add URL query parameters so that user filters persist after a page refresh as well as making the page accessbile.
 - I tested the happy path of cases, as I didn't see any instructions where I'd need to account for bad data
 - I also did not make it responsive, as I wasn't sure how much liberty outside of the wireframe I would have.
+- Please feel free to contact me if you run into any issues
 
 ## Preview
 
