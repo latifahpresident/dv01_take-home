@@ -6,3 +6,5 @@ export default {
 };
 
 export const Default = () => <Checkbox checked={false} onCheckedChange={() => {}} />;
+
+export const Checked = () => <Checkbox checked={true} onCheckedChange={() => {}} />;
