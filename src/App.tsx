@@ -1,9 +1,10 @@
 import './assets/stylesheets/app.css';
-import { Multiselect } from './components';
+import { Button, Multiselect } from './components';
 
 const App = () => {
   return (
     <div className="App">
+      <Button label="Click me" onClick={() => {}} />
       <Multiselect
         options={[
           { label: 'Option 1', value: 'option1' },

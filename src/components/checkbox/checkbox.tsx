@@ -1,0 +1,28 @@
+import { CheckIcon } from '@radix-ui/react-icons';
+import { useState } from 'react';
+
+interface CheckboxProps {
+  checked: boolean;
+  label?: string;
+  onCheckedChange?: (checked: boolean) => void;
+}
+
+export const Checkbox = ({ checked, onCheckedChange = () => {}, label }: CheckboxProps) => {
+  const [isChecked, setIsChecked] = useState(checked);
+
+  const handleClick = () => {
+    const newChecked = !isChecked;
+
+    setIsChecked(newChecked);
+    onCheckedChange(newChecked);
+  };
+
+  return (
+    <div className="flex items-center gap-2" onClick={handleClick}>
+      <div className="h-6 w-6 flex items-center justify-center border border-gray-300 rounded-md p-0.5">
+        {isChecked && <CheckIcon />}
+      </div>
+      {label && <span className="text-base text-gray-700 font-medium">{label}</span>}
+    </div>
+  );
+};
