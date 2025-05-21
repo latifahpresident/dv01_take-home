@@ -1,15 +1,22 @@
-/* eslint-disable */
-
-const { pathsToModuleNameMapper } = require('ts-jest');
-const { compilerOptions } = require('./tsconfig');
-
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 module.exports = {
-  roots: ['<rootDir>'],
-  preset: 'ts-jest',
+  preset: 'ts-jest/presets/js-with-ts-esm',
   testEnvironment: 'jsdom',
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths ?? {}),
+
+  moduleNameMapper: {
+    '\\.(css|less|scss)$': 'identity-obj-proxy',
+    // stub out your CSV→url imports
+    '\\.csv\\?url$': '<rootDir>/src/tests/__mocks__/fileMock.js',
+  },
+  setupFilesAfterEnv: ['<rootDir>/src/tests/setup-tests.ts'],
+
   transform: {
-    '.+\\.(css|less|sass|scss|png|jpg|gif|ttf|woff|woff2|svg)$': 'jest-transform-stub',
+    // Handle TS and JS (including your ESM .js files) via ts-jest, with ESM support
+    '^.+\\.[tj]sx?$': [
+      'ts-jest',
+      {
+        useESM: true,
+      },
+    ],
   },
 };
