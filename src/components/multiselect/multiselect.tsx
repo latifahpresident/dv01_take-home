@@ -43,7 +43,9 @@ export const Multiselect = ({
   };
 
   return (
-    <div className={cn('flex flex-col justify-center items-center', rootClassName)}>
+    <div
+      className={cn('flex flex-col min-w-56 justify-center items-center relative', rootClassName)}
+    >
       <div
         className={cn(
           'flex justify-between text-gray-500 items-center border border-gray-300 w-full rounded-md p-2 cursor-pointer',
@@ -63,7 +65,7 @@ export const Multiselect = ({
         <div
           ref={ref}
           className={cn(
-            'flex flex-col gap-2 mt-2 w-full border border-gray-300 rounded-md p-2',
+            'flex flex-col gap-2 mt-2 w-full border border-gray-300 rounded-md p-2 absolute top-10',
             listClassName
           )}
         >
