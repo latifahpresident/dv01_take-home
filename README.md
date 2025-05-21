@@ -4,6 +4,16 @@
 - Instead of relying on a component library, I built a custom multi-select control. In a production setting I’d normally use shadcn, but overriding its existing components felt like overkill. I also integrated Storybook to showcase the new control.
 - You will need to be on node 18.18 at a minimum, I didn't test later versions as that's what's currently on my machine, but all previous versions caused compatibility issues.
 - I implemented the chart, and the filters and they work dynamically. I wanted to changed the layout but I tried to stick to the wireframe as close as i could. With more time, I’d add URL query parameters so that user filters persist after a page refresh as well as making the page accessbile.
+- I tested the happy path of cases, as I didn't see any instructions where I'd need to account for bad data
+- I also did not make it responsive, as I wasn't sure how much liberty outside of the wireframe I would have.
+
+## Preview
+
+I deployed the project because I wanted to ensure it was projection ready. You can access it here: https://dv01-take-home.vercel.app/
+
+In the event the vercel is down here's a gif:
+
+![DV01 Project Demo](./src/assets/images/dv01-project.gif)
 
 ## Table of Contents
 
